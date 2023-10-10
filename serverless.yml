@@ -5,6 +5,21 @@ provider:
   name: aws
   runtime: python3.9
 
+
+httpApi:
+    cors: 
+      allowedOrigins:
+        - 
+      allowedHeaders:
+        - 
+      allowedMethods:
+        - 
+    authorizers:
+      customAuthorizer:
+        type: request
+        functionName: #insert name of function we create#
+
+
 functions:
   hello:
     handler: handler.hello
