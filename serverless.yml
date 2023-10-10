@@ -27,3 +27,55 @@ functions:
       - httpApi:
           path: /
           method: get
+
+
+functions:
+  login:
+    handler: handlers.login.handler
+    events:
+      - httpApi:
+          path: /login
+          method: post
+
+  logout:
+    handler: handlers.logout.handler
+    events:
+      - httpApi:
+          path: /logout
+          method: post
+  acctCreate:
+    handler: handlers.logout.handler
+    events:
+      - httpApi:
+          path: /create
+          method: post
+  acctgetbyId:
+    handler: handlers.getbyId.handler
+    events:
+      - httpApi:
+          path: /Id
+          method: post
+  acctupdate:
+    handler: handlers.update.handler
+    events:
+      - httpApi:
+          path: /update
+          method: post
+  acctdelete:
+    handler: handlers.delete.handler
+    events:
+      - httpApi:
+          path: /delete
+          method: post
+  acctget:
+    handler: handlers.get.handler
+    events:
+      - httpApi:
+          path: /get
+          method: post
+
+  authorizerFunc:
+    handler: authorizer.lambda_handler
+
+plugins:
+  - serverless-python-requirements
