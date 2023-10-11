@@ -1,8 +1,5 @@
-
-
 from datetime import datetime
 from pydantic import BaseModel
-
 
 
 class BreastExam_Create(BaseModel):
@@ -32,6 +29,7 @@ class BreastExam_History(BaseModel):
     areola_changes: str
     tissue_consistency: str
     discussed_with_provider: str
+
 
 class BreastExam_Update(BaseModel):
     date: datetime
