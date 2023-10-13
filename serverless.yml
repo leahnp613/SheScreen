@@ -3,21 +3,21 @@ frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: python3.9
+  runtime: python3.10
 
 
-httpApi:
-    cors: 
-      allowedOrigins:
-        - 
-      allowedHeaders:
-        - 
-      allowedMethods:
-        - 
-    authorizers:
-      customAuthorizer:
-        type: request
-        functionName: #insert name of function we create#
+# httpApi:
+#     cors: 
+#       allowedOrigins:
+#         - 
+#       allowedHeaders:
+#         - 
+#       allowedMethods:
+#         - 
+#     authorizers:
+#       customAuthorizer:
+#         type: request
+#         functionName: #insert name of function we create#
 
 
 functions:
@@ -27,9 +27,6 @@ functions:
       - httpApi:
           path: /
           method: get
-
-
-functions:
   login:
     handler: handlers.login.handler
     events:
@@ -37,45 +34,48 @@ functions:
           path: /login
           method: post
 
-  logout:
-    handler: handlers.logout.handler
-    events:
-      - httpApi:
-          path: /logout
-          method: post
-  acctCreate:
-    handler: handlers.logout.handler
-    events:
-      - httpApi:
-          path: /create
-          method: post
-  acctgetbyId:
-    handler: handlers.getbyId.handler
-    events:
-      - httpApi:
-          path: /Id
-          method: post
-  acctupdate:
-    handler: handlers.update.handler
-    events:
-      - httpApi:
-          path: /update
-          method: post
-  acctdelete:
-    handler: handlers.delete.handler
-    events:
-      - httpApi:
-          path: /delete
-          method: post
-  acctget:
-    handler: handlers.get.handler
-    events:
-      - httpApi:
-          path: /get
-          method: post
 
-  authorizerFunc:
-    handler: authorizer.lambda_handler
+# functions:
+
+#   logout:
+#     handler: handlers.logout.handler
+#     events:
+#       - httpApi:
+#           path: /logout
+#           method: post
+#   acctCreate:
+#     handler: handlers.logout.handler
+#     events:
+#       - httpApi:
+#           path: /create
+#           method: post
+#   acctgetbyId:
+#     handler: handlers.getbyId.handler
+#     events:
+#       - httpApi:
+#           path: /Id
+#           method: post
+#   acctupdate:
+#     handler: handlers.update.handler
+#     events:
+#       - httpApi:
+#           path: /update
+#           method: post
+#   acctdelete:
+#     handler: handlers.delete.handler
+#     events:
+#       - httpApi:
+#           path: /delete
+#           method: post
+#   acctget:
+#     handler: handlers.get.handler
+#     events:
+#       - httpApi:
+#           path: /get
+#           method: post
+
+#   authorizerFunc:
+#     handler: authorizer.lambda_handler
 
 plugins:
   - serverless-python-requirements
