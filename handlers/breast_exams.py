@@ -1,17 +1,16 @@
 from datetime import datetime
 import json
-import pydantic
-
+from pydantic import BaseModel
+from models import BreastExam_Create
 import json
 import pymongo
 
-# Replace with your MongoDB Atlas connection string
-# Example connection string format: mongodb+srv://<username>:<password>@<cluster>/<dbname>?retryWrites=true&w=majority
-mongo_uri = "YOUR_MONGODB_ATLAS_CONNECTION_STRING"
+
+mongo_uri = "mongodb+srv://leahnagarpowers:<password>@cluster0.hnmh04q.mongodb.net/?retryWrites=true&w=majority"
 
 # Set up a MongoDB client using the Atlas connection string
 client = pymongo.MongoClient(mongo_uri)
-db = client["your_database_name"]  # Replace with your MongoDB database name
+db = client["Cluster0"]  # Replace with your MongoDB database name
 appointment_collection = db["appointments"]
 
 def lambda_handler(event, context):
@@ -52,7 +51,18 @@ def lambda_handler(event, context):
     elif http_method == "POST":
         content = json.loads(event["body"])
         # Update the appointment with the given content
+        try: 
+            request_data = BreastExam_Create(**content)
+        except ValueError as e:
         result = appointment_collection.update_one({"_id": pk}, {"$set": content})
+        if result.modified_count > 0:
+            return {
+                "statusCode":400,
+                "body": json.dumps({"message": str(e)}),
+                "headers": {"Content-Type": "application/json"}
+            }
+
+        result = appointment_collection.update_one({"_id": pk}, {"$set": request_data.dict()})
         if result.modified_count > 0:
             appointment = appointment_collection.find_one({"_id": pk})
             return {
@@ -72,5 +82,3 @@ def lambda_handler(event, context):
             "body": json.dumps({"message": "Method not allowed"}),
             "headers": {"Content-Type": "application/json"}
         }
-
-
