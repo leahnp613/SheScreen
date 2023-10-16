@@ -13,72 +13,69 @@ client = pymongo.MongoClient(mongo_uri)
 db = client["Cluster0"]  # Replace with your MongoDB database name
 appointment_collection = db["appointments"]
 
-def lambda_handler(event, context):
-    http_method = event["httpMethod"]
+def get_id(event):
     path_parameters = event.get("pathParameters", {})
-    pk = path_parameters.get("pk")
+    id = path_parameters.get("id")
+    return id
 
-    if http_method == "GET":
-        appointment = appointment_collection.find_one({"_id": pk})
-        if appointment:
-            return {
-                "statusCode": 200,
-                "body": json.dumps(appointment),
-                "headers": {"Content-Type": "application/json"}
-            }
-        else:
-            return {
-                "statusCode": 404,
-                "body": json.dumps({"message": "Appointment not found"}),
-                "headers": {"Content-Type": "application/json"}
-            }
-
-    elif http_method == "DELETE":
-        result = appointment_collection.delete_one({"_id": pk})
-        if result.deleted_count > 0:
-            return {
-                "statusCode": 200,
-                "body": json.dumps({"deleted": True}),
-                "headers": {"Content-Type": "application/json"}
-            }
-        else:
-            return {
-                "statusCode": 404,
-                "body": json.dumps({"message": "Appointment not found"}),
-                "headers": {"Content-Type": "application/json"}
-            }
-
-    elif http_method == "POST":
-        content = json.loads(event["body"])
-        # Update the appointment with the given content
-        try: 
-            request_data = BreastExam_Create(**content)
-        except ValueError as e:
-        result = appointment_collection.update_one({"_id": pk}, {"$set": content})
-        if result.modified_count > 0:
-            return {
-                "statusCode":400,
-                "body": json.dumps({"message": str(e)}),
-                "headers": {"Content-Type": "application/json"}
-            }
-
-        result = appointment_collection.update_one({"_id": pk}, {"$set": request_data.dict()})
-        if result.modified_count > 0:
-            appointment = appointment_collection.find_one({"_id": pk})
-            return {
-                "statusCode": 200,
-                "body": json.dumps(appointment),
-                "headers": {"Content-Type": "application/json"}
-            }
-        else:
-            return {
-                "statusCode": 404,
-                "body": json.dumps({"message": "Appointment not found"}),
-                "headers": {"Content-Type": "application/json"}
-            }
+def get_appointment(event, context):
+    id = get_id(event)
+    appointment = appointment_collection.find_one({"_id": id})
+    if appointment:
+        return {
+            "statusCode": 200,
+            "body": json.dumps(appointment),
+            "headers": {"Content-Type": "application/json"}
+        }
     else:
         return {
-            "statusCode": 405,
-            "body": json.dumps({"message": "Method not allowed"}),
+            "statusCode": 404,
+            "body": json.dumps({"message": "Appointment not found"}),
+            "headers": {"Content-Type": "application/json"}
+        }
+
+def delete_apppointment(event, context):
+    id = get_id(event)
+    result = appointment_collection.delete_one({"_id": id})
+    if result.deleted_count > 0:
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"deleted": True}),
+            "headers": {"Content-Type": "application/json"}
+        }
+    else:
+        return {
+            "statusCode": 404,
+            "body": json.dumps({"message": "Appointment not found"}),
+            "headers": {"Content-Type": "application/json"}
+        }
+
+def update_appointment(event, context):
+    id = get_id(event)
+    content = json.loads(event["body"])
+    # Update the appointment with the given content
+    try: 
+        request_data = BreastExam_Create(**content)
+    except ValueError as e:
+        result = appointment_collection.update_one({"_id": id}, {"$set": content})
+    if result.modified_count > 0:
+        return {
+            "statusCode":400,
+            "body": json.dumps({"message": str(e)}),
+            "headers": {"Content-Type": "application/json"}
+        }
+
+    result = appointment_collection.update_one({"_id": id}, {"$set": request_data.dict()})
+    if result.modified_count > 0:
+        appointment = appointment_collection.find_one({"_id": id})
+        return {
+            "statusCode": 200,
+            "body": json.dumps(appointment),
+            "headers": {"Content-Type": "application/json"}
+        }
+    else:
+        return {
+            "statusCode": 404,
+            "body": json.dumps({"message": "Appointment not found"}),
             "headers": {"Content-Type": "application/json"}
         }
