@@ -1,17 +1,16 @@
 import json
 from datetime import datetime
 from models.cancer_screening import (
-    cervical_cancer_create,
-    cervical_cancer_history,
-    cervical_cancer_update,
-    cervical_cancer_delete
+   Screening
 )
 import pymongo
+import pydantic
+from uuid import uuid4
 
 # Define the MongoDB connection information
-mongo_uri = "mongodb+srv://prip889:<password>@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
-database_name = "your_database_name"
-collection_name = "cervical_screening_history"
+mongo_uri = "mongodb+srv://prip889:rpc_bdq8nhk6fcx!VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
+database_name = "SheScreen"
+collection_name = "cancerScreening"
 
 # Initialize a PyMongo client
 client = pymongo.MongoClient(mongo_uri)
@@ -19,89 +18,86 @@ db = client[database_name]
 collection = db[collection_name]
 
 
-### CREATE CERVICAL SCREENING
+### CREATE SCREENING
 
 
-def lambda_handler(event, context):
+def create_screening(event, context):
+    # Parse the JSON data from the event
     try:
-        # Parse the JSON data from the event
         data = json.loads(event['body'])
-
-        # Create an instance of the model for validation
-        screening_data = cervical_cancer_create(**data)
-
-        # Check if the data is valid
-        if screening_data:
-            # Process the data or perform further actions
-            # For example, you can store it in a database
-            # Replace this with your actual processing logic
-            response = {
-                "statusCode": 200,
-                "body": json.dumps({"message": "Data received and processed successfully."})
-            }
-        else:
-            response = {
-                "statusCode": 400,
-                "body": json.dumps({"error": "Invalid data format."})
-            }
-    except Exception as e:
-        # Handle any errors that occur during processing
-        response = {
-            "statusCode": 400,
-            "body": json.dumps({"error": str(e)})
+    except KeyError:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({
+                "message": "Missing body; Please provide a body in the request"
+            })
         }
+
+    # Create an instance of the model for validation
+    try:
+        screening_data = Screening(**data, id=str(uuid4()))
+    # Check if the data is valid
+    except pydantic.ValidationError as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({
+                "message": "Validation error",
+                "error": e.errors()
+            })
+        }
+
+    collection.insert_one(screening_data.dict())
+    
+
+    response = {
+        "statusCode": 200,
+        "body": screening_data.json()
+    }
 
     return response
 
 
 
-### HISTORY OF CERVICAL SCREENING
+### HISTORY OF CANCER SCREENING
 
 
-def lambda_handler(event, context):
+def get_history(event, context):
     try:
-        # Parse the JSON data from the event
-        data = json.loads(event['body'])
+        id = event['pathParameters']['id']
+    except KeyError:
+         return {
+            "statusCode": 500,
+            "body": json.dumps({
+                "message": "Missing id; Please provide an id in the request"
+            })
+        }
+    
+    screening = collection.find_one({"id": id})
 
-        # Create an instance of the model for validation
-        screening_data = cervical_cancer_history(**data)
-
-        # Check if the data is valid
-        if screening_data:
-            # Prepare the data for MongoDB insertion
-            data_to_insert = {
-                'date': screening_data.screening_date,
-                'time': screening_data.screening_time,
-                'provider_questions': screening_data.result
-            }
-
-            # Insert the data into the MongoDB collection
-            collection.insert_one(data_to_insert)
-
-            response = {
-                "statusCode": 200,
-                "body": json.dumps({"message": "Cervical screening history data stored successfully."})
-            }
-        else:
-            response = {
-                "statusCode": 400,
-                "body": json.dumps({"error": "Invalid data format."})
-            }
-    except Exception as e:
-        # Handle any errors that occur during processing
-        response = {
-            "statusCode": 400,
-            "body": json.dumps({"error": str(e)})
+    try:
+        screening = Screening(**screening)
+    except pydantic.ValidationError as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({
+                "message": "Validation error",
+                "error": e.errors()
+            })
         }
 
-    return response
+    return {
+        "statusCode": 200,
+        "body": json.dumps({
+            "screening": screening
+        })
+    }
 
 
 
 ### UPDATE CERVICAL SCREENING
 
 
-def lambda_handler(event, context):
+def update_cervical_screening(event, context):
     try:
         # Parse the JSON data from the event
         data = json.loads(event['body'])
@@ -154,7 +150,7 @@ def lambda_handler(event, context):
 
 #### DELETE CERVICAL SCREENING
 
-def lambda_handler(event, context):
+def delete_cervical_screening(event, context):
     try:
         # Parse the JSON data from the event
         data = json.loads(event['body'])

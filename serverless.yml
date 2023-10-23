@@ -33,7 +33,20 @@ functions:
       - httpApi:
           path: /login
           method: post
-
+  
+  createScreening:
+    handler: handlers.cancer_screening.create_screening
+    events:
+      - httpApi:
+          path: /screening
+          method: post
+  
+  getHistory:
+    handler: handlers.cancer_screening.get_history
+    events:
+      - httpApi:
+          path: /screening/{id}
+          method: get
 
 # functions:
 
