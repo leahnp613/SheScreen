@@ -1,9 +1,7 @@
 import json
 from pydantic import BaseModel
-from models import BreastExam_Create
-import json
 import pymongo
-
+from models import BreastExam_Create
 
 mongo_uri = "mongodb+srv://prip889:rpc_bdq8nhk6fcx!VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
 

@@ -3,6 +3,8 @@ from datetime import datetime, timedelta, timezone
 
 import pydantic
 import pymongo
+from models.users import UserIn
+
 
 mongo_uri = "mongodb+srv://prip889:rpc_bdq8nhk6fcx!VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
 database_name = "SheScreen"
@@ -11,9 +13,6 @@ collection_name = "users"
 client = pymongo.MongoClient(mongo_uri)
 db = client[database_name]
 collection = db[collection_name]
-
-
-from models.users import UserIn
 
 
 def handler(event, context):
