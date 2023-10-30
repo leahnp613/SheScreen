@@ -1,6 +1,6 @@
 import json
 from datetime import datetime, timedelta, timezone
-import jwt
+
 import pydantic
 import pymongo
 
