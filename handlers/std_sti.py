@@ -4,7 +4,7 @@ from models.stds_stis import (
     std_sti_create,
     std_sti_history,
     std_sti_update,
-    std_sti_delete
+    std_sti_delete,
 )
 
 mongo_uri = "mongodb+srv://prip889:<password>@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
@@ -23,7 +23,7 @@ collection = db[collection_name]
 def lambda_handler(event, context):
     try:
         # Parse the JSON data from the event
-        data = json.loads(event['body'])
+        data = json.loads(event["body"])
 
         # Create an instance of the model for data validation
         std_sti_data = std_sti_create(**data)
@@ -38,29 +38,27 @@ def lambda_handler(event, context):
 
             response = {
                 "statusCode": 200,
-                "body": json.dumps({"message": "STD/STI record created successfully."})
+                "body": json.dumps({"message": "STD/STI record created successfully."}),
             }
         else:
             response = {
                 "statusCode": 400,
-                "body": json.dumps({"error": "Invalid data format."})
+                "body": json.dumps({"error": "Invalid data format."}),
             }
     except Exception as e:
         # Handle any errors that occur during processing
-        response = {
-            "statusCode": 400,
-            "body": json.dumps({"error": str(e)})
-        }
+        response = {"statusCode": 400, "body": json.dumps({"error": str(e)})}
 
     return response
 
 
 ### HISTORY
 
+
 def lambda_handler(event, context):
     try:
         # Parse the JSON data from the event
-        data = json.loads(event['body'])
+        data = json.loads(event["body"])
 
         # Create an instance of the model for data validation
         std_sti_data = std_sti_history(**data)
@@ -75,32 +73,33 @@ def lambda_handler(event, context):
 
             response = {
                 "statusCode": 200,
-                "body": json.dumps({"message": "STD/STI history record created successfully."})
+                "body": json.dumps(
+                    {"message": "STD/STI history record created successfully."}
+                ),
             }
         else:
             response = {
                 "statusCode": 400,
-                "body": json.dumps({"error": "Invalid data format."})
+                "body": json.dumps({"error": "Invalid data format."}),
             }
     except Exception as e:
         # Handle any errors that occur during processing
-        response = {
-            "statusCode": 400,
-            "body": json.dumps({"error": str(e)})
-        }
+        response = {"statusCode": 400, "body": json.dumps({"error": str(e)})}
 
     return response
+
 
 ### UPDATE
 
 
 #### update keeps leaving a part of code to manually update data but we want the user to be able to update the data
-#need to fgiure this out
+# need to fgiure this out
+
 
 def lambda_handler(event, context):
     try:
         # Parse the JSON data from the event
-        data = json.loads(event['body'])
+        data = json.loads(event["body"])
 
         # Create an instance of the model for request validation
         delete_request = std_sti_delete(**data)
@@ -108,9 +107,7 @@ def lambda_handler(event, context):
         # Check if the request is valid
         if delete_request:
             # Define the filter to find the record based on the patient ID
-            filter_criteria = {
-                'patient_id': delete_request.patient_id
-            }
+            filter_criteria = {"patient_id": delete_request.patient_id}
 
             # Delete the matching record from the MongoDB collection
             result = collection.delete_one(filter_criteria)
@@ -118,23 +115,22 @@ def lambda_handler(event, context):
             if result.deleted_count == 1:
                 response = {
                     "statusCode": 200,
-                    "body": json.dumps({"message": "STD/STI record deleted successfully."})
+                    "body": json.dumps(
+                        {"message": "STD/STI record deleted successfully."}
+                    ),
                 }
             else:
                 response = {
                     "statusCode": 404,
-                    "body": json.dumps({"error": "Record not found for deletion."})
+                    "body": json.dumps({"error": "Record not found for deletion."}),
                 }
         else:
             response = {
                 "statusCode": 400,
-                "body": json.dumps({"error": "Invalid delete request format."})
+                "body": json.dumps({"error": "Invalid delete request format."}),
             }
     except Exception as e:
         # Handle any errors that occur during processing
-        response = {
-            "statusCode": 400,
-            "body": json.dumps({"error": str(e)})
-        }
+        response = {"statusCode": 400, "body": json.dumps({"error": str(e)})}
 
     return response

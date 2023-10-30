@@ -37,3 +37,6 @@ class UserUpdate(pydantic.BaseModel):
     username: Optional[str]
     password: Optional[SecretStr]
     avatar: Optional[str]
+
+def find_user(username):
+    

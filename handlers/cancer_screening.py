@@ -1,8 +1,6 @@
 import json
 from datetime import datetime
-from models.cancer_screening import (
-   Screening
-)
+from models.cancer_screening import Screening
 import pymongo
 import pydantic
 from uuid import uuid4
@@ -24,13 +22,13 @@ collection = db[collection_name]
 def create_screening(event, context):
     # Parse the JSON data from the event
     try:
-        data = json.loads(event['body'])
+        data = json.loads(event["body"])
     except KeyError:
         return {
             "statusCode": 500,
-            "body": json.dumps({
-                "message": "Missing body; Please provide a body in the request"
-            })
+            "body": json.dumps(
+                {"message": "Missing body; Please provide a body in the request"}
+            ),
         }
 
     # Create an instance of the model for validation
@@ -40,22 +38,14 @@ def create_screening(event, context):
     except pydantic.ValidationError as e:
         return {
             "statusCode": 500,
-            "body": json.dumps({
-                "message": "Validation error",
-                "error": e.errors()
-            })
+            "body": json.dumps({"message": "Validation error", "error": e.errors()}),
         }
 
     collection.insert_one(screening_data.dict())
-    
 
-    response = {
-        "statusCode": 200,
-        "body": screening_data.json()
-    }
+    response = {"statusCode": 200, "body": screening_data.json()}
 
     return response
-
 
 
 ### HISTORY OF CANCER SCREENING
@@ -63,15 +53,15 @@ def create_screening(event, context):
 
 def get_history(event, context):
     try:
-        id = event['pathParameters']['id']
+        id = event["pathParameters"]["id"]
     except KeyError:
-         return {
+        return {
             "statusCode": 500,
-            "body": json.dumps({
-                "message": "Missing id; Please provide an id in the request"
-            })
+            "body": json.dumps(
+                {"message": "Missing id; Please provide an id in the request"}
+            ),
         }
-    
+
     screening = collection.find_one({"id": id})
 
     try:
@@ -79,19 +69,10 @@ def get_history(event, context):
     except pydantic.ValidationError as e:
         return {
             "statusCode": 500,
-            "body": json.dumps({
-                "message": "Validation error",
-                "error": e.errors()
-            })
+            "body": json.dumps({"message": "Validation error", "error": e.errors()}),
         }
 
-    return {
-        "statusCode": 200,
-        "body": json.dumps({
-            "screening": screening
-        })
-    }
-
+    return {"statusCode": 200, "body": json.dumps({"screening": screening})}
 
 
 ### UPDATE CERVICAL SCREENING
@@ -100,7 +81,7 @@ def get_history(event, context):
 def update_cervical_screening(event, context):
     try:
         # Parse the JSON data from the event
-        data = json.loads(event['body'])
+        data = json.loads(event["body"])
 
         # Create an instance of the model for request validation
         update_request = cervical_cancer_update(**data)
@@ -108,15 +89,13 @@ def update_cervical_screening(event, context):
         # Check if the request is valid
         if update_request:
             # Define the filter to find the record based on the patient ID
-            filter_criteria = {
-                'patient_id': update_request.patient_id
-            }
+            filter_criteria = {"patient_id": update_request.patient_id}
 
             # Define the update data
             update_data = {
-                '$set': {
-                    'result': update_request.new_result,
-                    'comments': update_request.new_comments
+                "$set": {
+                    "result": update_request.new_result,
+                    "comments": update_request.new_comments,
                 }
             }
 
@@ -126,34 +105,34 @@ def update_cervical_screening(event, context):
             if result.modified_count > 0:
                 response = {
                     "statusCode": 200,
-                    "body": json.dumps({"message": "Cervical screening records updated successfully."})
+                    "body": json.dumps(
+                        {"message": "Cervical screening records updated successfully."}
+                    ),
                 }
             else:
                 response = {
                     "statusCode": 404,
-                    "body": json.dumps({"error": "No records found for update."})
+                    "body": json.dumps({"error": "No records found for update."}),
                 }
         else:
             response = {
                 "statusCode": 400,
-                "body": json.dumps({"error": "Invalid update request format."})
+                "body": json.dumps({"error": "Invalid update request format."}),
             }
     except Exception as e:
         # Handle any errors that occur during processing
-        response = {
-            "statusCode": 400,
-            "body": json.dumps({"error": str(e)})
-        }
+        response = {"statusCode": 400, "body": json.dumps({"error": str(e)})}
 
     return response
 
 
 #### DELETE CERVICAL SCREENING
 
+
 def delete_cervical_screening(event, context):
     try:
         # Parse the JSON data from the event
-        data = json.loads(event['body'])
+        data = json.loads(event["body"])
 
         # Create an instance of the model for request validation
         delete_request = cervical_cancer_delete(**data)
@@ -162,8 +141,8 @@ def delete_cervical_screening(event, context):
         if delete_request:
             # Define the filter to find the record based on the patient ID and screening date
             filter_criteria = {
-                'patient_id': delete_request.patient_id,
-                'screening_date': delete_request.screening_date
+                "patient_id": delete_request.patient_id,
+                "screening_date": delete_request.screening_date,
             }
 
             # Delete the matching record from the MongoDB collection
@@ -172,23 +151,22 @@ def delete_cervical_screening(event, context):
             if result.deleted_count == 1:
                 response = {
                     "statusCode": 200,
-                    "body": json.dumps({"message": "Cervical screening record deleted successfully."})
+                    "body": json.dumps(
+                        {"message": "Cervical screening record deleted successfully."}
+                    ),
                 }
             else:
                 response = {
                     "statusCode": 404,
-                    "body": json.dumps({"error": "Record not found for deletion."})
+                    "body": json.dumps({"error": "Record not found for deletion."}),
                 }
         else:
             response = {
                 "statusCode": 400,
-                "body": json.dumps({"error": "Invalid delete request format."})
+                "body": json.dumps({"error": "Invalid delete request format."}),
             }
     except Exception as e:
         # Handle any errors that occur during processing
-        response = {
-            "statusCode": 400,
-            "body": json.dumps({"error": str(e)})
-        }
+        response = {"statusCode": 400, "body": json.dumps({"error": str(e)})}
 
     return response
