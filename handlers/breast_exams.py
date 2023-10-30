@@ -6,7 +6,7 @@ import json
 import pymongo
 
 
-mongo_uri = "mongodb+srv://leahnagarpowers:<password>@cluster0.hnmh04q.mongodb.net/?retryWrites=true&w=majority"
+mongo_uri = "mongodb+srv://prip889:rpc_bdq8nhk6fcx!VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
 
 # Set up a MongoDB client using the Atlas connection string
 client = pymongo.MongoClient(mongo_uri)
