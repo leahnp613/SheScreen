@@ -2,12 +2,7 @@ import re
 from typing import Any, Optional
 
 import pydantic
-from beanie import Indexed
-from beanie.odm.fields import PydanticObjectId
-from beanie.operators import In
 from pydantic.types import SecretStr
-
-from models import BaseDocument
 
 
 class UserOut(pydantic.BaseModel):
@@ -43,65 +38,3 @@ class UserUpdate(pydantic.BaseModel):
     password: Optional[SecretStr]
     avatar: Optional[str]
 
-
-class User(UserOut):
-    password: SecretStr
-    scopes: list[str] = []
-    followers: Optional[list["UserOut"]] = None
-    following: Optional[list["UserOut"]] = None
-
-    class Config:
-        json_encoders = {
-            PydanticObjectId: str
-        }  # This line specifies how to serialize ObjectId
-        extra = "ignore"  # Ignore fields not defined in the model
-
-    def json(self, *args, **kwargs):
-        return super().json(*args, **kwargs, exclude={"password", "scopes"})
-
-
-class UserDocument(User, BaseDocument):
-    username: Indexed(str, unique=True)
-    password: str
-    followers: list[str] = []
-    following: list[str] = []
-
-    class Settings:
-        name = "users"
-        indexes = [("id",), ("username",)]
-
-
-async def get_followers(follower_ids: list[str]):
-    if not follower_ids:
-        return []
-    followers = await UserDocument.find(In(UserDocument.username, follower_ids),
-                                        limit=100).to_list()
-    return followers
-
-
-async def get_following(following_ids: list[str]):
-    if not following_ids:
-        return []
-    following = await UserDocument.find(In(UserDocument.username,
-                                           following_ids),
-                                        limit=100).to_list()
-    return following
-
-
-async def generate_user_dict(user: UserDocument) -> dict[str, Any]:
-    return {
-        **user.dict(),
-        "followers": [
-            UserOut(**user.dict()).dict()
-            for user in await get_followers(user.followers)
-        ],
-        "following": [
-            UserOut(**user.dict()).dict()
-            for user in await get_following(user.following)
-        ],
-    }
-
-
-async def find_user(username: str) -> UserDocument:
-    found_user = await UserDocument.find_one({"username": username})
-    return found_user

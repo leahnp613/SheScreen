@@ -29,7 +29,7 @@ def handler(event, context):
         try:
             user_request = UserIn.parse_obj(body)
         except pydantic.ValidationError as e:
-            return Response(statusCode=403, body={"reason": e.errors()})
+            return (statusCode=403, body={"reason": e.errors()})
 
         found_user = await find_user(user_request.username)
 
