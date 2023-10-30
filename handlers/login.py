@@ -14,7 +14,7 @@ db = client[database_name]
 collection = db[collection_name]
 
 
-from models.users import UserIn, find_user
+from models.users import UserIn
 
 
 def handler(event, context):
