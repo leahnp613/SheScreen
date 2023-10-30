@@ -8,7 +8,7 @@ from models.stds_stis import (
 )
 
 mongo_uri = "mongodb+srv://prip889:<password>@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
-database_name = "your_database_name"
+database_name = "SheScreen"
 collection_name = "cervical_screening_history"
 
 # Initialize a PyMongo client

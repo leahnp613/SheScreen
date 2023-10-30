@@ -1,5 +1,4 @@
 import json
-from datetime import datetime
 from models.cancer_screening import Screening
 import pymongo
 import pydantic
