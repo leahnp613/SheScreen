@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 import jwt
 import pydantic
 import pymongo
-import utils
 
 mongo_uri = "mongodb+srv://prip889:rpc_bdq8nhk6fcx!VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
 database_name = "SheScreen"
