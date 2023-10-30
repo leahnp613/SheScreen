@@ -1,15 +1,9 @@
-import asyncio
 import json
 from datetime import datetime, timedelta, timezone
-
 import jwt
 import pydantic
-
 import utils
-from models import Response
-from models.users import UserDocument, UserIn, find_user
-from services.secrets import get_secret
-
+from models.users import UserIn, find_user
 
 def handler(event, context):
     """
@@ -18,30 +12,32 @@ def handler(event, context):
     authenticate future requests.
     """
 
-    async def _login(event):
-        try:
-            body = json.loads(event["body"])
-        except KeyError:
-            return Response(statusCode=403,
-                            body="Unauthorized: No body was passed")
+    try:
+        body = json.loads(event["body"])
+    except KeyError:
+        return {"statusCode": 403, "body": "Unauthorized: No body was passed"}
 
-        await utils.setup()
-        try:
-            user_request = UserIn.parse_obj(body)
-        except pydantic.ValidationError as e:
-            return (statusCode=403, body={"reason": e.errors()})
+    try:
+        user_request = UserIn.parse_obj(body)
+    except pydantic.ValidationError as e:
+        return {"statusCode": 403, "body": {"reason": e.errors()}}
 
-        found_user = await find_user(user_request.username)
+    found_user = find_user(user_request.username)
 
-        print(f"found user: {found_user}")
+    print(f"found user: {found_user}")
 
-        if found_user.password != user_request.password.get_secret_value():
-            return Response(statusCode=403,
-                            body={"reason": "incorrect password"})
+    if found_user.password != user_request.password.get_secret_value():
+        return {"statusCode": 403, "body": {"reason": "incorrect password"}}
 
-        token = utils.generate_token(found_user)
+    token = utils.generate_token(found_user)
 
-        return Response(statusCode=200, body={"token": token})
+    return {"statusCode": 200, "body": {"token": token}}
 
-    res = asyncio.run(_login(event))
-    return res.dict()
+# Sample event and context for testing
+event = {
+    "body": json.dumps({"username": "user123", "password": "password123"})
+}
+context = {}
+
+result = handler(event, context)
+print(result)
