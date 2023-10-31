@@ -9,7 +9,7 @@ import os
 client = MongoClient(host=os.environ.get("mongodb+srv://prip889:rpc_bdq8nhk6fcx%VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"))
 
 
-def handler(event, context):
+def login(event, context):
     """
     This is the handler for the login endpoint. It is responsible for
     authenticating a user and returning a JWT token that can be used to
