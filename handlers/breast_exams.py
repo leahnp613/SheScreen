@@ -12,13 +12,19 @@ appointment_collection = db["appointments"]
 
 
 def get_id(event):
-    path_parameters = event.get("pathParameters", {})
-    id = path_parameters.get("id")
+    path_parameters = event["pathParameters"]
+    id = path_parameters["id"]
     return id
 
 
 def get_appointment(event, context):
-    id = get_id(event)
+    try:
+        id = get_id(event)
+    except KeyError:
+        return {
+            "statusCode": 400,
+            "body": "Please send id"
+        }
     appointment = appointment_collection.find_one({"_id": id})
     if appointment:
         return {
@@ -54,9 +60,8 @@ def delete_apppointment(event, context):
 def update_appointment(event, context):
     id = get_id(event)
     content = json.loads(event["body"])
-    # Update the appointment with the given content
     try:
-        request_data = BreastExam_Create(**content)
+        request_data = BreastExam(**content)
     except ValueError as e:
         result = appointment_collection.update_one({"_id": id}, {"$set": content})
     if result.modified_count > 0:
@@ -69,16 +74,9 @@ def update_appointment(event, context):
     result = appointment_collection.update_one(
         {"_id": id}, {"$set": request_data.dict()}
     )
-    if result.modified_count > 0:
-        appointment = appointment_collection.find_one({"_id": id})
-        return {
-            "statusCode": 200,
-            "body": json.dumps(appointment),
-            "headers": {"Content-Type": "application/json"},
-        }
-    else:
-        return {
-            "statusCode": 404,
-            "body": json.dumps({"message": "Appointment not found"}),
-            "headers": {"Content-Type": "application/json"},
-        }
+    return {
+        "statusCode": 200,
+        "body": result.json(),
+        "headers": {"Content-Type": "application/json"},
+    }
+    
