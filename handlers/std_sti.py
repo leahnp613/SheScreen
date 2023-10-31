@@ -7,7 +7,7 @@ from models.stds_stis import (
     std_sti_delete,
 )
 
-mongo_uri = "mongodb+srv://prip889:<password>@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
+mongo_uri = "mongodb+srv://temppassword:temppassword@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
 database_name = "SheScreen"
 collection_name = "cervical_screening_history"
 

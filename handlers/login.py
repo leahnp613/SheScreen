@@ -8,7 +8,7 @@ import os
 
 client = MongoClient(
     host=os.environ.get(
-        "mongodb+srv://prip889:rpc_bdq8nhk6fcx%VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
+uri = "mongodb+srv://temppassword:temppassword@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
     )
 )
 
