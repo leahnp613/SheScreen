@@ -21,10 +21,7 @@ def get_appointment(event, context):
     try:
         id = get_id(event)
     except KeyError:
-        return {
-            "statusCode": 400,
-            "body": "Please send id"
-        }
+        return {"statusCode": 400, "body": "Please send id"}
     appointment = appointment_collection.find_one({"_id": id})
     if appointment:
         return {
@@ -79,4 +76,3 @@ def update_appointment(event, context):
         "body": result.json(),
         "headers": {"Content-Type": "application/json"},
     }
-    

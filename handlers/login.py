@@ -6,7 +6,11 @@ from models.users import UserIn
 from pymongo import MongoClient
 import os
 
-client = MongoClient(host=os.environ.get("mongodb+srv://prip889:rpc_bdq8nhk6fcx%VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"))
+client = MongoClient(
+    host=os.environ.get(
+        "mongodb+srv://prip889:rpc_bdq8nhk6fcx%VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
+    )
+)
 
 
 def login(event, context):
