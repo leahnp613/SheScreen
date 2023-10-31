@@ -22,6 +22,7 @@ def login(event, context):
         body = json.loads(event["body"])
     except KeyError:
         return {"statusCode": 403, "body": "Unauthorized: No body was passed"}
+    print("WORKKKK")
     try:
         user_request = UserIn.parse_obj(body)
     except pydantic.ValidationError as e:
