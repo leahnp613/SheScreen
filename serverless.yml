@@ -28,7 +28,7 @@ functions:
           path: /
           method: get
   login:
-    handler: handlers.login.handler
+    handler: handlers.login.login
     events:
       - httpApi:
           path: /login
