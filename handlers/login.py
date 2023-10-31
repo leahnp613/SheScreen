@@ -17,7 +17,7 @@ def login(event, context):
     """
     db = client.SheScreen
     collection = db.users
-
+    print("request Received")
     try:
         body = json.loads(event["body"])
     except KeyError:
