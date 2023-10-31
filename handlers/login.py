@@ -1,18 +1,12 @@
 import json
 from datetime import datetime, timedelta, timezone
-
+import jwt
 import pydantic
-import pymongo
 from models.users import UserIn
+from pymongo import MongoClient
+import os
 
-
-mongo_uri = "mongodb+srv://prip889:rpc_bdq8nhk6fcx!VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
-database_name = "SheScreen"
-collection_name = "users"
-
-client = pymongo.MongoClient(mongo_uri)
-db = client[database_name]
-collection = db[collection_name]
+client = MongoClient(host=os.environ.get("mongodb+srv://prip889:rpc_bdq8nhk6fcx%VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"))
 
 
 def handler(event, context):
@@ -21,6 +15,9 @@ def handler(event, context):
     authenticating a user and returning a JWT token that can be used to
     authenticate future requests.
     """
+    db = client.SheScreen
+    collection = db.users
+
     try:
         body = json.loads(event["body"])
     except KeyError:
@@ -39,5 +36,5 @@ def handler(event, context):
         "username": user_request.username,
         "exp": datetime.now(tz=timezone.utc) + timedelta(days=1),
     }
-    token = jwt.encode(payload=payload, key="fuck david")
+    token = jwt.encode(payload=payload, key="HERE")
     return {"statusCode": 200, "body": json.dumps({"token": token})}
