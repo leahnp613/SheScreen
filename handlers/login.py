@@ -3,14 +3,6 @@ from datetime import datetime, timedelta, timezone
 import jwt
 import pydantic
 from models.users import UserIn
-from pymongo import MongoClient
-import os
-
-client = MongoClient(
-    host=os.environ.get(
-uri = "mongodb+srv://temppassword:temppassword@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
-    )
-)
 
 
 def login(event, context):
@@ -19,9 +11,6 @@ def login(event, context):
     authenticating a user and returning a JWT token that can be used to
     authenticate future requests.
     """
-    db = client.SheScreen
-    collection = db.users
-    print("request Received")
     try:
         body = json.loads(event["body"])
     except KeyError:

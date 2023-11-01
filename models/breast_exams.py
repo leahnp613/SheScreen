@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 
 class BreastExam(BaseModel):
+    uuid: str
     date: datetime
     concerns: str
     lumps: str

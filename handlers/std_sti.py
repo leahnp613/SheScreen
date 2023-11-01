@@ -19,118 +19,67 @@ collection = db[collection_name]
 
 ### CREATE STD_STI
 
+def get_id(event):
+    path_parameters = event["pathParameters"]
+    id = path_parameters["id"]
+    return id
 
-def lambda_handler(event, context):
+
+def get_appointment(event, context):
     try:
-        # Parse the JSON data from the event
-        data = json.loads(event["body"])
+        id = get_id(event)
+    except KeyError:
+        return {"statusCode": 400, "body": "Please send id"}
+    appointment = appointment_collection.find_one({"_id": id})
+    if appointment:
+        return {
+            "statusCode": 200,
+            "body": json.dumps(appointment),
+            "headers": {"Content-Type": "application/json"},
+        }
+    else:
+        return {
+            "statusCode": 404,
+            "body": json.dumps({"message": "Appointment not found"}),
+            "headers": {"Content-Type": "application/json"},
+        }
 
-        # Create an instance of the model for data validation
-        std_sti_data = std_sti_create(**data)
-
-        # Check if the data is valid
-        if std_sti_data:
-            # Convert the Pydantic model to a dictionary for database insertion
-            data_to_insert = std_sti_data.dict()
-
-            # Insert the data into the MongoDB collection
-            collection.insert_one(data_to_insert)
-
-            response = {
-                "statusCode": 200,
-                "body": json.dumps({"message": "STD/STI record created successfully."}),
-            }
-        else:
-            response = {
-                "statusCode": 400,
-                "body": json.dumps({"error": "Invalid data format."}),
-            }
-    except Exception as e:
-        # Handle any errors that occur during processing
-        response = {"statusCode": 400, "body": json.dumps({"error": str(e)})}
-
-    return response
+def delete_apppointment(event, context):
+    id = get_id(event)
+    result = appointment_collection.delete_one({"_id": id})
+    if result.deleted_count > 0:
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"deleted": True}),
+            "headers": {"Content-Type": "application/json"},
+        }
+    else:
+        return {
+            "statusCode": 404,
+            "body": json.dumps({"message": "Appointment not found"}),
+            "headers": {"Content-Type": "application/json"},
+        }
 
 
-### HISTORY
-
-
-def lambda_handler(event, context):
+def get_history(event, context):
     try:
-        # Parse the JSON data from the event
-        data = json.loads(event["body"])
+        id = event["pathParameters"]["id"]
+    except KeyError:
+        return {
+            "statusCode": 500,
+            "body": json.dumps(
+                {"message": "Missing id; Please provide an id in the request"}
+            ),
+        }
 
-        # Create an instance of the model for data validation
-        std_sti_data = std_sti_history(**data)
+    screening = collection.find_one({"id": id})
 
-        # Check if the data is valid
-        if std_sti_data:
-            # Convert the Pydantic model to a dictionary for database insertion
-            data_to_insert = std_sti_data.dict()
-
-            # Insert the data into the MongoDB collection
-            collection.insert_one(data_to_insert)
-
-            response = {
-                "statusCode": 200,
-                "body": json.dumps(
-                    {"message": "STD/STI history record created successfully."}
-                ),
-            }
-        else:
-            response = {
-                "statusCode": 400,
-                "body": json.dumps({"error": "Invalid data format."}),
-            }
-    except Exception as e:
-        # Handle any errors that occur during processing
-        response = {"statusCode": 400, "body": json.dumps({"error": str(e)})}
-
-    return response
-
-
-### UPDATE
-
-
-#### update keeps leaving a part of code to manually update data but we want the user to be able to update the data
-# need to fgiure this out
-
-
-def lambda_handler(event, context):
     try:
-        # Parse the JSON data from the event
-        data = json.loads(event["body"])
+        screening = Screening(**screening)
+    except pydantic.ValidationError as e:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"message": "Validation error", "error": e.errors()}),
+        }
 
-        # Create an instance of the model for request validation
-        delete_request = std_sti_delete(**data)
-
-        # Check if the request is valid
-        if delete_request:
-            # Define the filter to find the record based on the patient ID
-            filter_criteria = {"patient_id": delete_request.patient_id}
-
-            # Delete the matching record from the MongoDB collection
-            result = collection.delete_one(filter_criteria)
-
-            if result.deleted_count == 1:
-                response = {
-                    "statusCode": 200,
-                    "body": json.dumps(
-                        {"message": "STD/STI record deleted successfully."}
-                    ),
-                }
-            else:
-                response = {
-                    "statusCode": 404,
-                    "body": json.dumps({"error": "Record not found for deletion."}),
-                }
-        else:
-            response = {
-                "statusCode": 400,
-                "body": json.dumps({"error": "Invalid delete request format."}),
-            }
-    except Exception as e:
-        # Handle any errors that occur during processing
-        response = {"statusCode": 400, "body": json.dumps({"error": str(e)})}
-
-    return response
+    return {"statusCode": 200, "body": json.dumps({"screening": screening})}
