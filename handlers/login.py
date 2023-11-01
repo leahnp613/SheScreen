@@ -3,8 +3,13 @@ from datetime import datetime, timedelta, timezone
 import jwt
 import pydantic
 from models.users import UserIn
+from pymongo import MongoClient
+import os
 
-   
+client = MongoClient(host=os.environ.get("mongodb+srv://prip889:rpc_bdq8nhk6fcx%VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"))
+D4pOlf1oKQbyYVKt
+
+
 def login(event, context):
     """
     This is the handler for the login endpoint. It is responsible for
