@@ -4,7 +4,7 @@ import jwt
 import pydantic
 from models.users import UserIn
 
-
+   
 def login(event, context):
     """
     This is the handler for the login endpoint. It is responsible for
