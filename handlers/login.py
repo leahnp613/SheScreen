@@ -3,19 +3,19 @@ from datetime import datetime, timedelta, timezone
 import jwt
 import pydantic
 from models.users import UserIn
-from pymongo import MongoClient
-import os
-
-client = MongoClient(host=os.environ.get("mongodb+srv://prip889:rpc_bdq8nhk6fcx%VCR@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"))
-D4pOlf1oKQbyYVKt
-
+from utils.mongodb import mongoclient
 
 def login(event, context):
+
     """
-    This is the handler for the login endpoint. It is responsible for
+    This is the lambda handler for the login endpoint. It is responsible for
     authenticating a user and returning a JWT token that can be used to
     authenticate future requests.
     """
+    mongoClient = mongoclient()
+    db = mongoClient["Users"]
+    collection = db["UserInfo"]
+
     try:
         body = json.loads(event["body"])
     except KeyError:
@@ -25,7 +25,7 @@ def login(event, context):
         user_request = UserIn.parse_obj(body)
     except pydantic.ValidationError as e:
         return {"statusCode": 403, "body": json.dumps({"reason": e.errors()})}
-    found_user = collection.find_one({"username": user_request.username})
+    found_user = collection.find_one({"username": "priya"})
     print(f"found user: {found_user}")
     if not found_user:
         return {"statusCode": 404, "body": json.dumps({"reason": "user not found"})}

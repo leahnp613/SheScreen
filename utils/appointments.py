@@ -1,16 +1,6 @@
-import json
-from pydantic import BaseModel
-import pymongo
-from models import BreastExam_Create
-import os
-
-mongo_uri = os.environ["mongo_uri"]
-
-# Set up a MongoDB client using the Atlas connection string
-client = pymongo.MongoClient(mongo_uri)
-db = client["Cluster0"]  # Replace with your MongoDB database name
-appointment_collection = db["appointments"]
-
+## std/sti & breast exam get appt
+# doesn't include cancer screenings bc the fx are different
+#appointment collection is referring to the mongo info we need to figure out how that can be streamlined bc its calling a different database
 
 def get_id(event):
     path_parameters = event["pathParameters"]
@@ -38,22 +28,7 @@ def get_appointment(event, context):
         }
 
 
-def delete_apppointment(event, context):
-    id = get_id(event)
-    result = appointment_collection.delete_one({"_id": id})
-    if result.deleted_count > 0:
-        return {
-            "statusCode": 200,
-            "body": json.dumps({"deleted": True}),
-            "headers": {"Content-Type": "application/json"},
-        }
-    else:
-        return {
-            "statusCode": 404,
-            "body": json.dumps({"message": "Appointment not found"}),
-            "headers": {"Content-Type": "application/json"},
-        }
-
+## std/sti & breast exam update
 
 def update_appointment(event, context):
     id = get_id(event)
@@ -77,3 +52,22 @@ def update_appointment(event, context):
         "body": result.json(),
         "headers": {"Content-Type": "application/json"},
     }
+
+
+## std/sti & breast exam delete
+
+def delete_apppointment(event, context):
+    id = get_id(event)
+    result = appointment_collection.delete_one({"_id": id})
+    if result.deleted_count > 0:
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"deleted": True}),
+            "headers": {"Content-Type": "application/json"},
+        }
+    else:
+        return {
+            "statusCode": 404,
+            "body": json.dumps({"message": "Appointment not found"}),
+            "headers": {"Content-Type": "application/json"},
+        }
