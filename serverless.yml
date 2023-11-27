@@ -4,16 +4,27 @@ frameworkVersion: "3"
 provider:
   name: aws
   runtime: python3.10
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "ssm:GetParameter"
-      Resource: !Sub arn:aws:ssm:${AWS::Region}:{$AWS::AccountId}:*
+  iam:
+    role: null  # If you have a custom role, specify it here
+    permissionsBoundary: null  # If you have a permissions boundary, specify it here
+    deploymentRole:
+      name: null  # If you have a CloudFormation deployment role, specify it here
+    
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "ssm:GetParameter"
+          Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:*
 
-    - Effect: "Allow"
-      Action:
-        - "secretsmanager:GetSecretValue"
-      Resource: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:authSecrets-FPE1gD
+        - Effect: "Allow"
+          Action:
+            - "secretsmanager:GetSecretValue"
+          Resource: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:authSecrets-FPE1gD
+      managedPolicies:  # If you have managed policies, specify them here
+        - arn:aws:iam::aws:policy/YourManagedPolicy
+
+# Other provider settings can be added here
+
       # beside authSecrets what is the number/letter combo?
 
 # httpApi:
