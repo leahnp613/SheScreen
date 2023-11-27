@@ -1,5 +1,7 @@
 service: SheScreen
 frameworkVersion: "3"
+	
+useDotenv: true # Load .env files
 
 provider:
   name: aws
@@ -112,3 +114,4 @@ functions:
 
 plugins:
   - serverless-python-requirements
+  - serverless-dotenv-plugin
