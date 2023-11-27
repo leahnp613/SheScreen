@@ -8,7 +8,7 @@ from handlers.login import login
 class UsersTable:
     """Encapsulates an Amazon DynamoDB table of user data."""
 
-    def __init__(self, table_name: str = "follwersTable"):
+    def __init__(self, table_name: str = "usersTable"):
         """
         :param dyn_resource: A Boto3 DynamoDB resource.
         """
