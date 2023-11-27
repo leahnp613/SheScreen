@@ -1,24 +1,33 @@
 service: SheScreen
-frameworkVersion: '3'
+frameworkVersion: "3"
 
 provider:
   name: aws
   runtime: python3.10
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "ssm:GetParameter"
+      Resource: !Sub arn:aws:ssm:${AWS::Region}:{$AWS::AccountId}:*
 
+    - Effect: "Allow"
+      Action:
+        - "secretsmanager:GetSecretValue"
+      Resource: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:authSecrets-FPE1gD
+      # beside authSecrets what is the number/letter combo?
 
 # httpApi:
-#     cors: 
+#     cors:
 #       allowedOrigins:
-#         - 
+#         -
 #       allowedHeaders:
-#         - 
+#         -
 #       allowedMethods:
-#         - 
+#         -
 #     authorizers:
 #       customAuthorizer:
 #         type: request
 #         functionName: #insert name of function we create#
-
 
 functions:
   hello:
@@ -33,22 +42,20 @@ functions:
       - httpApi:
           path: /login
           method: post
-  
+
   createScreening:
     handler: handlers.cancer_screening.create_screening
     events:
       - httpApi:
           path: /screening
           method: post
-  
+
   getHistory:
     handler: handlers.cancer_screening.get_history
     events:
       - httpApi:
           path: /screening/{id}
           method: get
-
-
 
 # functions:
 
