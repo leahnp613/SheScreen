@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 import jwt
 import pydantic
 from models.users import UserIn
-from utils.mongodb import mongoclient
 
 def login(event, context):
 
@@ -12,9 +11,6 @@ def login(event, context):
     authenticating a user and returning a JWT token that can be used to
     authenticate future requests.
     """
-    mongoClient = mongoclient()
-    db = mongoClient["Users"]
-    collection = db["UserInfo"]
 
     try:
         body = json.loads(event["body"])

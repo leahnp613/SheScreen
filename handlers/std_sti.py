@@ -7,14 +7,7 @@ from models.stds_stis import (
     std_sti_delete,
 )
 
-mongo_uri = "mongodb+srv://temppassword:temppassword@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
-database_name = "SheScreen"
-collection_name = "cervical_screening_history"
 
-# Initialize a PyMongo client
-client = pymongo.MongoClient(mongo_uri)
-db = client[database_name]
-collection = db[collection_name]
 
 
 ### CREATE STD_STI

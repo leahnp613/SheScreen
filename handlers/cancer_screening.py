@@ -4,15 +4,6 @@ import pymongo
 import pydantic
 from uuid import uuid4
 
-# Define the MongoDB connection information
-mongo_uri = "mongodb+srv://temppassword:temppassword@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
-database_name = "SheScreen"
-collection_name = "cancerScreening"
-
-# Initialize a PyMongo client
-client = pymongo.MongoClient(mongo_uri)
-db = client[database_name]
-collection = db[collection_name]
 
 
 ### CREATE SCREENING

@@ -4,13 +4,6 @@ import pymongo
 from models import BreastExam_Create
 import os
 
-mongo_uri = os.environ["mongo_uri"]
-
-# Set up a MongoDB client using the Atlas connection string
-client = pymongo.MongoClient(mongo_uri)
-db = client["Cluster0"]  # Replace with your MongoDB database name
-appointment_collection = db["appointments"]
-
 
 def get_id(event):
     path_parameters = event["pathParameters"]
