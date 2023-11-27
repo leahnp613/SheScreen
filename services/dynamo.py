@@ -5,7 +5,7 @@ from handlers.login import login
 
 
 
-class FollwersTable:
+class UsersTable:
     """Encapsulates an Amazon DynamoDB table of user data."""
 
     def __init__(self, table_name: str = "follwersTable"):
