@@ -3,6 +3,11 @@ from datetime import datetime, timedelta, timezone
 import jwt
 import pydantic
 from models.users import UserIn
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
 
 def login(event, context):
 
