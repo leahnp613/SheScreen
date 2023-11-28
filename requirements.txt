@@ -2,4 +2,3 @@ boto3
 pydantic==1.10
 pymongo
 pyjwt
-dotenv

@@ -1,9 +1,8 @@
 import boto3
 import botocore
+import logging
 
-from handlers.login import login
-
-
+logger = logging.getLogger(__name__)
 
 class UsersTable:
     """Encapsulates an Amazon DynamoDB table of user data."""
@@ -23,7 +22,7 @@ class UsersTable:
         try:
             response = self.table.get_item(Key={"username": username})
         except botocore.exceptions.ClientError as err:
-            login().error(
+            logger.error(
                 "Couldn't get user %s from table %s. Here's why: %s: %s",
                 username,
                 self.table.name,

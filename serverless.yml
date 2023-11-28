@@ -1,17 +1,11 @@
 service: SheScreen
 frameworkVersion: "3"
-	
-useDotenv: true # Load .env files
 
 provider:
   name: aws
   runtime: python3.10
   iam:
-    role: null  # If you have a custom role, specify it here
-    permissionsBoundary: null  # If you have a permissions boundary, specify it here
-    deploymentRole:
-      name: null  # If you have a CloudFormation deployment role, specify it here
-    
+    role:
       statements:
         - Effect: "Allow"
           Action:
@@ -20,14 +14,13 @@ provider:
 
         - Effect: "Allow"
           Action:
-            - "secretsmanager:GetSecretValue"
-          Resource: !Sub arn:aws:secretsmanager:${env:AWS_REGION}:${env:AWS_ACCOUNT_ID}:secret:authSecrets-FPE1gD
-      managedPolicies:  # If you have managed policies, specify them here
-        - arn:aws:iam::aws:policy/YourManagedPolicy
-
-# Other provider settings can be added here
-
-      # beside authSecrets what is the number/letter combo?
+            - "dynamodb:PutItem"
+            - "dynamodb:GetItem"
+            - "dynamodb:UpdateItem"
+            - "dynamodb:DeleteItem"
+            - "dynamodb:Scan"
+            - "dynamodb:Query"
+          Resource: !GetAtt usersTable.Arn
 
 # httpApi:
 #     cors:
@@ -114,4 +107,20 @@ functions:
 
 plugins:
   - serverless-python-requirements
-  - serverless-dotenv-plugin
+
+resources: # CloudFormation template syntax from here on.
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: usersTable
+        AttributeDefinitions:
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
