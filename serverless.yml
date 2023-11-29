@@ -36,12 +36,6 @@ provider:
 #         functionName: #insert name of function we create#
 
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - httpApi:
-          path: /
-          method: get
   login:
     handler: handlers.login.login
     events:
