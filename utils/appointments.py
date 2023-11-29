@@ -1,16 +1,6 @@
-import json
-import pymongo
-from models.stds_stis import (
-    std_sti_create,
-    std_sti_history,
-    std_sti_update,
-    std_sti_delete,
-)
-
-
-
-
-### CREATE STD_STI
+## std/sti & breast exam get appt
+# doesn't include cancer screenings bc the fx are different
+#appointment collection is referring to the mongo info we need to figure out how that can be streamlined bc its calling a different database
 
 def get_id(event):
     path_parameters = event["pathParameters"]
@@ -37,6 +27,35 @@ def get_appointment(event, context):
             "headers": {"Content-Type": "application/json"},
         }
 
+
+## std/sti & breast exam update
+
+def update_appointment(event, context):
+    id = get_id(event)
+    content = json.loads(event["body"])
+    try:
+        request_data = BreastExam(**content)
+    except ValueError as e:
+        result = appointment_collection.update_one({"_id": id}, {"$set": content})
+    if result.modified_count > 0:
+        return {
+            "statusCode": 400,
+            "body": json.dumps({"message": str(e)}),
+            "headers": {"Content-Type": "application/json"},
+        }
+
+    result = appointment_collection.update_one(
+        {"_id": id}, {"$set": request_data.dict()}
+    )
+    return {
+        "statusCode": 200,
+        "body": result.json(),
+        "headers": {"Content-Type": "application/json"},
+    }
+
+
+## std/sti & breast exam delete
+
 def delete_apppointment(event, context):
     id = get_id(event)
     result = appointment_collection.delete_one({"_id": id})
@@ -52,27 +71,3 @@ def delete_apppointment(event, context):
             "body": json.dumps({"message": "Appointment not found"}),
             "headers": {"Content-Type": "application/json"},
         }
-
-
-def get_history(event, context):
-    try:
-        id = event["pathParameters"]["id"]
-    except KeyError:
-        return {
-            "statusCode": 500,
-            "body": json.dumps(
-                {"message": "Missing id; Please provide an id in the request"}
-            ),
-        }
-
-    screening = collection.find_one({"id": id})
-
-    try:
-        screening = Screening(**screening)
-    except pydantic.ValidationError as e:
-        return {
-            "statusCode": 500,
-            "body": json.dumps({"message": "Validation error", "error": e.errors()}),
-        }
-
-    return {"statusCode": 200, "body": json.dumps({"screening": screening})}

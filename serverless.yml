@@ -1,54 +1,61 @@
 service: SheScreen
-frameworkVersion: '3'
+frameworkVersion: "3"
 
 provider:
   name: aws
   runtime: python3.10
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "ssm:GetParameter"
+          Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:*
 
+        - Effect: "Allow"
+          Action:
+            - "dynamodb:PutItem"
+            - "dynamodb:GetItem"
+            - "dynamodb:UpdateItem"
+            - "dynamodb:DeleteItem"
+            - "dynamodb:Scan"
+            - "dynamodb:Query"
+          Resource: !GetAtt usersTable.Arn
 
 # httpApi:
-#     cors: 
+#     cors:
 #       allowedOrigins:
-#         - 
+#         -
 #       allowedHeaders:
-#         - 
+#         -
 #       allowedMethods:
-#         - 
+#         -
 #     authorizers:
 #       customAuthorizer:
 #         type: request
 #         functionName: #insert name of function we create#
 
-
 functions:
-  hello:
-    handler: handler.hello
-    events:
-      - httpApi:
-          path: /
-          method: get
   login:
     handler: handlers.login.login
     events:
       - httpApi:
           path: /login
           method: post
-  
+
   createScreening:
     handler: handlers.cancer_screening.create_screening
     events:
       - httpApi:
           path: /screening
           method: post
-  
+
   getHistory:
     handler: handlers.cancer_screening.get_history
     events:
       - httpApi:
           path: /screening/{id}
           method: get
-
-
 
 # functions:
 
@@ -94,3 +101,19 @@ functions:
 
 plugins:
   - serverless-python-requirements
+
+resources: # CloudFormation template syntax from here on.
+  Resources:
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: usersTable
+        AttributeDefinitions:
+          - AttributeName: username
+            AttributeType: S
+        KeySchema:
+          - AttributeName: username
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

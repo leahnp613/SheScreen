@@ -3,28 +3,34 @@ from datetime import datetime, timedelta, timezone
 import jwt
 import pydantic
 from models.users import UserIn
+from services.dynamo import UsersTable
 
-   
+users = UsersTable()
+
+
+
 def login(event, context):
+
     """
-    This is the handler for the login endpoint. It is responsible for
+    This is the lambda handler for the login endpoint. It is responsible for
     authenticating a user and returning a JWT token that can be used to
     authenticate future requests.
     """
+
     try:
         body = json.loads(event["body"])
     except KeyError:
         return {"statusCode": 403, "body": "Unauthorized: No body was passed"}
-    print("WORKKKK")
     try:
         user_request = UserIn.parse_obj(body)
     except pydantic.ValidationError as e:
         return {"statusCode": 403, "body": json.dumps({"reason": e.errors()})}
-    found_user = collection.find_one({"username": user_request.username})
+    found_user = users.get_user(user_request.username)
     print(f"found user: {found_user}")
     if not found_user:
         return {"statusCode": 404, "body": json.dumps({"reason": "user not found"})}
-    if found_user.password != user_request.password.get_secret_value():
+    found_user = UserIn.parse_obj(found_user)
+    if found_user.password.get_secret_value() != user_request.password.get_secret_value():
         return {"statusCode": 403, "body": json.dumps({"reason": "incorrect password"})}
     payload = {
         "username": user_request.username,

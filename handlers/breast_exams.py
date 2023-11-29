@@ -2,13 +2,7 @@ import json
 from pydantic import BaseModel
 import pymongo
 from models import BreastExam_Create
-
-mongo_uri = "mongodb+srv://temppassword:temppassword@cluster0.uet1wpt.mongodb.net/?retryWrites=true&w=majority"
-
-# Set up a MongoDB client using the Atlas connection string
-client = pymongo.MongoClient(mongo_uri)
-db = client["Cluster0"]  # Replace with your MongoDB database name
-appointment_collection = db["appointments"]
+import os
 
 
 def get_id(event):
