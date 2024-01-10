@@ -1,6 +1,5 @@
 import json
 from models.cancer_screening import Screening
-import pymongo
 import pydantic
 from uuid import uuid4
 
