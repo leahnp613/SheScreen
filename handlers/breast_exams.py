@@ -1,6 +1,5 @@
 import json
 from pydantic import BaseModel
-import pymongo
 from models import BreastExam_Create
 import os
 

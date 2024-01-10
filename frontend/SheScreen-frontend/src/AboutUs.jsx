@@ -27,3 +27,12 @@ export default function AboutUs() {
     </>
   );
 }
+
+//PURPOSE
+// SheScreen was created with women's health in mind, enabling women to take charge of their health and ensure all screening are current.
+// At SheScreen we believe each woman deserves the opportunity to be informed with reliable information while providing one location for your all needs.
+
+//DISCLAIMER
+// this info is not ours it is generated through the NIH. the purpose of this app is informative, and not to provide medical advice.
+// No personal identifying info will be stored. Contact a healthcare professional for any concerns or emergencies. Dial 911 or go to your
+// nearest emergency room if you are experiencing a medical emergency.
