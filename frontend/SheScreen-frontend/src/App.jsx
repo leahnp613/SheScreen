@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainPage from "./MainPage";
 import Signup from "./Signup";
 import Login from "./Login";
+import UserProfileEdit from "./UserProfileEdit";
 import "./main.css";
 
 function App() {
